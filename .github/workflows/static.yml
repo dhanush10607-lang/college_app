@@ -1,14 +1,15 @@
-name: Database Connection Test
-on: [push]
+const mysql = require('mysql2');
 
-jobs:
-  test-connection:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+// We use process.env to pull from GitHub Secrets (or a .env file locally)
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME
+});
 
-      - name: Connect to Database
-        run: |
-          # Example for MySQL using the secrets you saved
-          mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES;"
+connection.connect((err) => {
+  if (err) throw err;
+  console.log("Connected to Filess.io Database!");
+});
